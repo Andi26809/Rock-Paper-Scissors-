@@ -1,0 +1,273 @@
+#include <iostream>
+#include <time.h> // Includes time commands
+#include <windows.h> // Includes commands to change color and the sleep command
+#include <stdlib.h> // Allows for the Clear screen function
+
+using namespace std;
+
+void color(string name) { //Colors the text in console
+    HANDLE h = GetStdHandle( STD_OUTPUT_HANDLE );
+    if (name == "red")
+    {
+        SetConsoleTextAttribute(h, 12);
+    }
+    else if (name == "blue")
+    {
+        SetConsoleTextAttribute(h, 9);
+    }
+    else if (name == "org")
+    {
+        SetConsoleTextAttribute(h, 7);
+    }
+}
+
+string NTA(int ans) { //Turns RPS numbers into text
+    switch(ans)
+    {
+    case 1:
+        return "Rock";
+        break;
+    case 2:
+        return "Paper";
+        break;
+    case 3:
+        return "Scissors";
+        break;
+    }
+}
+
+int WB(int num1, int num2, int num3) { //Sees what material is used the most by a player
+    if (num1 > num2 && num1 > num3) {
+        return 1;
+    } else if (num2 > num1 && num2 > num3) {
+        return 2;
+    } else if (num3 > num1 && num3 > num2) {
+        return 3;
+    } else {
+        srand(time(NULL));
+        return rand() % 3 + 1;
+    }
+}
+
+int CalMove(int hTP, int hUA, int hUAP, int hCA, int hCAP, int hUW, int n1, int n2, int n3) { //Figures out what kind of move to do next
+        if(hTP == 0) {
+            srand(time(NULL));
+            if(rand() % 2 + 1 == 1) {
+                return 1;
+        } else if (hTP == 1 && hTP == 2) {
+            if(hUW == 1) {
+                switch(hUAP) {
+                case 1:
+                    return 2;
+                    break;
+                case 2:
+                    return 3;
+                    break;
+                case 3:
+                    return 1;
+                    break;
+                }
+            } else {
+                switch(hCAP) {
+                case 1:
+                    return 2;
+                    break;
+                case 2:
+                    return 3;
+                    break;
+                case 3:
+                    return 1;
+                    break;
+                }
+            }
+        } else {
+            if(hUA == hUAP) {
+                switch(hUA) {
+                case 1:
+                    return 2;
+                    break;
+                case 2:
+                    return 3;
+                    break;
+                case 3:
+                    return 1;
+                    break;
+                }
+            } else if (hUA == 0) {
+                return hUAP;
+            } else {
+                if(rand() % 2 + 1 == 1) {
+                    return rand() % 3 + 1;
+                } else if (rand() % 2 + 1 == 1) {
+                    return hCAP;
+                } else {
+                    WB(n1, n2, n3);
+                }
+            }
+        }
+    }
+
+int RPSresults(int nn1, int nn2) { //Figures out who won in Rock, Paper and Scissors
+    switch(nn1) {
+    case 1:
+                switch(nn2) {
+            case 1:
+                return 2;
+                break;
+            case 2:
+                return 0;
+                break;
+            case 3:
+                return 1;
+                break;
+        }
+        break;
+    case 2:
+                switch(nn2) {
+            case 1:
+                return 1;
+                break;
+            case 2:
+                return 2;
+                break;
+            case 3:
+                return 0;
+                break;
+        }
+        break;
+    case 3:
+                switch(nn2) {
+            case 1:
+                return 0;
+                break;
+            case 2:
+                return 1;
+                break;
+            case 3:
+                return 2;
+                break;
+        }
+        break;
+    }
+}
+
+void sec() { //Delays the program for a second
+    Sleep(1000);
+}
+
+void msec() { //Delays the program for a decisecond
+    Sleep(100);
+}
+
+int main()
+{
+    int HowMany[] = {0, 0, 0}; // 0 is Rock, 1 is Paper, 2 is Scisors
+    int Scores[] = {0, 0}; // 0 is PlayerScore, 1 is A.I_Score
+    int TimesPlayed = 0;
+    string answer; //A var for getline commands
+    int UserAnswer = 0; //A var for cin commands
+    int UserAnswerPrev = 0;
+    int ComputerAnswer = 0;
+    int ComputerAnswerPrev = 0;
+    int UserWon = 0; // Sets up variables
+    int Results;
+
+    cout << "Welcome to a game of RPS, or Rock, paper and scissors.\n";
+    sec();
+    cout << "This is a game created with a little A.I. to simulate a real player.\n";
+    sec();
+    cout << "The A.I.'s answer is going to be marked with ";
+    color("red");
+    cout << "Red.\n";
+    sec();
+    color("org");
+    cout << "And your answer is going to be marked with ";
+    color("blue");
+    cout << "Blue.\n";
+    sec();
+    color("org");
+    cout << "So press enter to continue: ";
+    getline(cin, answer);
+    system("CLS"); // Wipes all text on screen
+    while (UserAnswer != 4)
+    {
+        sec();
+        cout << "Times Played: " << TimesPlayed << endl;
+        msec();
+        cout << "Your wins: " << Scores[0] << endl;
+        msec();
+        cout << "A.I.'s wins: " << Scores[1] << endl;
+        msec();
+        cout << "1 is for Rock, 2 is for Paper, 3 is for Scissors, 4 is for Exit Game.\nWhat are you going to choose? ";
+        cin >> UserAnswer;
+        system("CLS");
+        if(UserAnswer == 4)
+        {
+            cout << "Thanks for playing!\n";
+            msec();
+            return 0;
+        }
+        else if(UserAnswer > 4)
+        {
+            cout << "Invalid Answer\n";
+            msec();
+            return 0;
+        }
+        ComputerAnswer = CalMove(TimesPlayed, UserAnswer, UserAnswerPrev, ComputerAnswer, ComputerAnswerPrev, UserWon, HowMany[0], HowMany[1], HowMany[2]);
+        //Figures out what to do next.
+        sec();
+        color("blue");
+        cout << "You chose: " << NTA(UserAnswer) << endl;
+        sec();
+        color("red");
+        cout << "A.I. chose: " << NTA(ComputerAnswer) << endl;
+        color("blue");
+        sec();
+        cout << endl << NTA(UserAnswer);
+        color("org");
+        msec();
+        cout << " vs ";
+        color("red");
+        msec();
+        cout << NTA(ComputerAnswer) << endl << endl;
+        color("org");
+        Results = RPSresults(UserAnswer, ComputerAnswer);
+        UserAnswerPrev = UserAnswer;
+        ComputerAnswerPrev = ComputerAnswer;
+        sec();
+        switch(Results) { //Outputs who won
+            case 0:
+                cout << "You have lost!\n";
+                Scores[1]++;
+                UserWon = 0;
+                break;
+            case 1:
+                cout << "You have won!\n";
+                Scores[0]++;
+                UserWon = 1;
+                break;
+            case 2:
+                cout << "You have tied!\n";
+                UserWon = 0;
+                break;
+        }
+        switch(UserAnswer) { //Changes one of the HowMany element's value
+            case 1:
+                HowMany[0]++;
+                break;
+            case 2:
+                HowMany[1]++;
+                break;
+            case 3:
+                HowMany[2]++;
+                break;
+        }
+        TimesPlayed++;
+        sec();
+        cout << "Please enter a character and then press enter to continue: ";
+        cin >> answer;
+        system("CLS");
+    }
+    return 0;
+    //This code belongs to @Andi26809 on Github
+}
